@@ -1,5 +1,6 @@
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 

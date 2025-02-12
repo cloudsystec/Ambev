@@ -23,14 +23,14 @@ public class SaleRepository : ISaleRepository
     /// <summary>
     /// Creates a new Sale in the database
     /// </summary>
-    /// <param name="Sale">The Sale to create</param>
+    /// <param name="sale">The Sale to create</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created Sale</returns>
-    public async Task<Sale> CreateAsync(Sale Sale, CancellationToken cancellationToken = default)
+    public async Task<Sale> CreateAsync(Sale sale, CancellationToken cancellationToken = default)
     {
-        await _context.Sales.AddAsync(Sale, cancellationToken);
+        await _context.Sales.AddAsync(sale, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-        return Sale;
+        return sale;
     }
 
     /// <summary>
@@ -52,12 +52,23 @@ public class SaleRepository : ISaleRepository
     /// <returns>True if the Sale was deleted, false if not found</returns>
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var Sale = await GetByIdAsync(id, cancellationToken);
-        if (Sale == null)
+        var sale = await GetByIdAsync(id, cancellationToken);
+        if (sale == null)
             return false;
 
-        _context.Sales.Remove(Sale);
+        _context.Sales.Remove(sale);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
+    }
+
+    public async Task<Sale?> UpdateAsync(Sale updateSale, CancellationToken cancellationToken = default)
+    {
+        var sale = await GetByIdAsync(updateSale.Id, cancellationToken);
+        if (sale == null)
+            return null;
+
+        _context.Sales.Update(sale);
+        await _context.SaveChangesAsync(cancellationToken);
+        return sale;
     }
 }
