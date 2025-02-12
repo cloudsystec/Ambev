@@ -38,4 +38,12 @@ public interface ISaleRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The Sale if found, null otherwise</returns>
     Task<Sale?> UpdateAsync(Sale sale, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// List sales by CustomerId ( optional )
+    /// </summary>
+    /// <param name="customerId">The id of customer, if you need to get all sales from</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<Sale>> List(Guid? customerId = null, CancellationToken cancellationToken = default);
 }

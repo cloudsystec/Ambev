@@ -41,7 +41,7 @@ public class SaleRepository : ISaleRepository
     /// <returns>The Sale if found, null otherwise</returns>
     public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Sales.FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
+        return await _context.Sales.FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
     }
 
     /// <summary>
@@ -70,5 +70,10 @@ public class SaleRepository : ISaleRepository
         _context.Sales.Update(sale);
         await _context.SaveChangesAsync(cancellationToken);
         return sale;
+    }
+
+    public async Task<List<Sale>> List(Guid? customerId = null, CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales.Where(o => !customerId.HasValue || o.CustomerId == customerId).ToListAsync();
     }
 }

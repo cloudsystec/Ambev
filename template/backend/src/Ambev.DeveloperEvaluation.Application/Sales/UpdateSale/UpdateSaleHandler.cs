@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Domain.Events;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
@@ -15,16 +16,18 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
     /// <summary>
     /// Initializes a new instance of UpdateSaleHandler
     /// </summary>
     /// <param name="saleRepository">The Sale repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+    public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper, IMediator mediator)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -47,8 +50,12 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         var sale = _mapper.Map<Sale>(command);
 
-        var UpdatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
-        var result = _mapper.Map<UpdateSaleResult>(UpdatedSale);
+        var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
+        var result = _mapper.Map<UpdateSaleResult>(updatedSale);
+
+        //the event of updated sale
+        await _mediator.Publish(new SaleModifiedEvent(updatedSale));
+
         return result;
     }
 }

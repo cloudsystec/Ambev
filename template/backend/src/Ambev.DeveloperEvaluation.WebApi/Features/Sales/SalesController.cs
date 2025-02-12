@@ -10,6 +10,8 @@ using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSale;
+using Ambev.DeveloperEvaluation.Application.Sales.ListSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -148,4 +150,35 @@ public class SalesController : BaseController
             Data = _mapper.Map<UpdateSaleResponse>(response)
         });
     }
+
+    /// <summary>
+    /// Retrieves a List of Sales by CustomerId ( optional )
+    /// </summary>
+    /// <param name="customerId">The unique identifier of the Sale</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The Sale details if found</returns>
+    [HttpGet("{customerId}/{pageNumber}/{pageSize}")]
+    [ProducesResponseType(typeof(ApiResponseWithData<PaginatedList<GetSaleResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ListSales([FromRoute] Guid customerId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var request = new ListSaleRequest { CustomerId = customerId };
+        var validator = new ListSaleRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var command = _mapper.Map<ListSaleCommand>(request.CustomerId);
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponseWithData<PaginatedList<GetSaleResponse>>
+        {
+            Success = true,
+            Message = "Sale retrieved successfully",
+            Data = await PaginatedList<GetSaleResponse>.CreateAsync(_mapper.Map<IQueryable<GetSaleResponse>>(response), pageNumber, pageSize)
+        });
+    }
+
 }

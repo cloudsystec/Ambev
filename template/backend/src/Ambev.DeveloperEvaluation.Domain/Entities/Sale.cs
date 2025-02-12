@@ -23,11 +23,6 @@ public class Sale : BaseEntity
     public virtual Sale Customer { get; set; }
 
     /// <summary>
-    /// Gets or sets the Total.
-    /// </summary>
-    public decimal Total => Products.Sum(x => x.Total);
-
-    /// <summary>
     /// Gets or sets the Branch. Is required
     /// </summary>
     public string Branch { get; set; } = string.Empty;

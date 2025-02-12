@@ -38,11 +38,6 @@ public class ProductSale : BaseEntity
     public decimal Discounts { get; set; } = 0;
 
     /// <summary>
-    /// Get the total price of this row (calculated)
-    /// </summary>
-    public decimal Total  => (Quantity * UnityPrice) * (1 - Discounts);
-
-    /// <summary>
     /// Initializes a new instance of the User class.
     /// </summary>
     public ProductSale()
